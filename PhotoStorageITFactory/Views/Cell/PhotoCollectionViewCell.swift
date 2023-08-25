@@ -1,7 +1,6 @@
 
 import UIKit
 
-
 //MARK: - Private constants
 
 private enum Size {
@@ -17,8 +16,8 @@ final class PhotoCollectionViewCell: UICollectionViewCell {
     
     //MARK: - Private propertise
     
-    private lazy var photoImageView = makePhotoImage()
-    private lazy var titleLabel = makeTitleLabel()
+    lazy var photoImageView = makePhotoImage()
+    lazy var titleLabel = makeTitleLabel()
     
     private var imageLoadingTask: URLSessionTask?
     
@@ -86,29 +85,6 @@ final class PhotoCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(photo: Photo) {
-        if let cachedImage = ImageCache.shared.getImage(forKey: photo.thumbnailUrl) {
-            photoImageView.image = cachedImage
-            titleLabel.text = photo.title
-        } else if let url = URL(string: photo.thumbnailUrl) {
-            imageLoadingTask?.cancel()
-            imageLoadingTask = URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
-                defer { self?.imageLoadingTask = nil }
-                if let error = error {
-                    print("Error loading image: \(error)")
-                    return
-                }
-                guard let data = data, let image = UIImage(data: data) else {
-                    print("Invalid image data")
-                    return
-                }
-                ImageCache.shared.setImage(image, forKey: photo.thumbnailUrl)
-                DispatchQueue.main.async {
-                    self?.photoImageView.image = image
-                    self?.titleLabel.text = photo.title
-                }
-            }
-            imageLoadingTask?.resume()
-        }
+        NetworkManager.shared.configureCell(cell: self, photo: photo)
     }
 }
-

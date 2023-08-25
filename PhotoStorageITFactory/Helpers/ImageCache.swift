@@ -2,8 +2,6 @@
 import Foundation
 import UIKit
 
-
-
 final class ImageCache {
     static let shared = ImageCache()
     

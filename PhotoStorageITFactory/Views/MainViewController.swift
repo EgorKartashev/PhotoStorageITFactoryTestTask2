@@ -1,23 +1,5 @@
-        // ДОПОЛНИТЕЛЬНО
-// добавить бесконечную прокуртку
-// добавить избранное в детейл вью контроллер и табБар?
-// добавить фильтрацию
-
-        // Спросить на созвоне
-// как перенести переход во вью модель?
-// изменить код стиль в networkManager  заменить ифлет на гуард и убрать комплишен нил,
-// вьюМодели подписать под протооколы?
-// нужна ли вью модель для каждого контроллера и ячейки?
-
-// Dipendency Injection для этого ассембли?, Dependency inversion для этого протоколы для вью моделей?
-// сделать ассембли отдельно и добавить туда объявление вьюмоделей, всех или только одной?
-// как сделать пангинацию?
-// makeUIimage -> это фабричные методы? паттер фабрика
-
 
 import UIKit
-
-
 //MARK: - Private constants
 
 private enum Size{
@@ -38,10 +20,19 @@ final class MainViewController: UIViewController {
         return collectionView
     }()
     
-    private var photos: [Photo] = []
     private var viewModel: MainViewModel?
+    private let coordinator: MainCoordinator
     
     //MARK: - Lifecycles aunctions
+    
+    init(coordinator: MainCoordinator) {
+        self.coordinator = coordinator
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,7 +78,7 @@ final class MainViewController: UIViewController {
 
 extension MainViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel?.photosCount ?? 0
+        return viewModel?.photos.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -97,13 +88,10 @@ extension MainViewController: UICollectionViewDataSource {
         return cell
     }
 }
-// 1. ПЕРЕНЕСТИ ВО ВЬЮ МОДЕЛЬ?
-extension MainViewController: UICollectionViewDelegate{
+
+extension MainViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let vc = PhotoDetailViewController()
-        guard let viewModel else { return }
-        vc.viewModel = PhotoDetailViewModel(photo: viewModel.photos[indexPath.row])
-        self.present(vc, animated: true)
-//        viewModel?.showPhotoDetail(at: indexPath)
+        guard let viewModel = viewModel else { return }
+        coordinator.showPhotoDetail(photo: viewModel.photos[indexPath.row])
     }
 }

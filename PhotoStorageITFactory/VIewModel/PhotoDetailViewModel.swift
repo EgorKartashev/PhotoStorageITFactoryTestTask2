@@ -2,8 +2,6 @@
 import Foundation
 import UIKit
 
-
-
 final class PhotoDetailViewModel {
     var photo: Photo
     

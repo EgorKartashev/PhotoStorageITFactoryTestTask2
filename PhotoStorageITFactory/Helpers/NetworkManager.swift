@@ -2,7 +2,6 @@
 import Foundation
 import UIKit
 
-
 final class NetworkManager {
     static let shared = NetworkManager()
     
@@ -42,5 +41,21 @@ final class NetworkManager {
             }
         }
         dataTask.resume()
+    }
+    
+    func configureCell(cell: PhotoCollectionViewCell, photo: Photo) {
+        if let cachedImage = ImageCache.shared.getImage(forKey: photo.thumbnailUrl) {
+            cell.photoImageView.image = cachedImage
+            cell.titleLabel.text = photo.title
+        } else {
+            loadImage(photo: photo) { image in
+                guard let image = image else { return }
+                ImageCache.shared.setImage(image, forKey: photo.thumbnailUrl)
+                DispatchQueue.main.async {
+                    cell.photoImageView.image = image
+                    cell.titleLabel.text = photo.title
+                }
+            }
+        }
     }
 }

@@ -1,19 +1,13 @@
 
 import Foundation
 
-
-
 final class MainViewModel {
     
     var photos: [Photo] = []
     var updateUI: (() -> Void)?
-    var onPhotoDetailRequested: ((PhotoDetailViewModel) -> Void)?
-    var photosCount: Int {
-        return photos.count
-    }
     
     func photoTitle(at index: Int) -> String {
-        return photos[index].title
+        photos[index].title
     }
     
     func fetchPhotos() {
@@ -24,16 +18,4 @@ final class MainViewModel {
             }
         }
     }
-    
-    // ****** 1 ******
-    
-    func showPhotoDetail(at indexPath: IndexPath) {
-        let photo = photos[indexPath.row]
-        let viewModel = PhotoDetailViewModel(photo: photo)
-        onPhotoDetailRequested?(viewModel)
-//        let vc = PhotoDetailViewController()
-//        present(vc, animated: true)
-    }
-    
-    
 }

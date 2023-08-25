@@ -1,8 +1,6 @@
 
 import Foundation
 
-
-
 enum R {
     
     enum Url{
