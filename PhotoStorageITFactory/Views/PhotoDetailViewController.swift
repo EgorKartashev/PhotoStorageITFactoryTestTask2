@@ -1,35 +1,49 @@
 
 import UIKit
 
-class PhotoDetailViewController: UIViewController {
-    var imageView: UIImageView!
-    
-    var viewModel: PhotoDetailViewModel!
-    
 
+
+private enum Size{
+    static let imageViewTopConstraint: CGFloat = 40
+    static let imageViewLeadingConstraint: CGFloat = 40
+    static let imageViewTrailingConstraint: CGFloat = -40
+    static let imageViewBottomConstraint: CGFloat = -40
+}
+
+final class PhotoDetailViewController: UIViewController {
+    
+    private lazy var imageView = makeImageView()
+    var viewModel: PhotoDetailViewModel?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.loadImage { [weak self] image in
-            DispatchQueue.main.async {
-                self?.imageView.image = image
-//                self?.imageView.heightAnchor.constraint(equalToConstant: image?.size.height ?? 0).isActive = true
-            }
-        }
-        setupImageView()
-        view.backgroundColor = .black
+        setupUI()
+        setupImage()
     }
     
-    private func setupImageView() {
-        imageView = UIImageView()
-        //imageView.backgroundColor = .red
+    private func setupImage(){
+        viewModel?.loadImage { [weak self] image in
+            DispatchQueue.main.async {
+                self?.imageView.image = image
+            }
+        }
+    }
+    
+    func makeImageView() -> UIImageView{
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }
+    
+    private func setupUI(){
+        view.backgroundColor = .black
         view.addSubview(imageView)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 40),
-            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
-            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
-            imageView.heightAnchor.constraint(equalToConstant: 400)
+            imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: Size.imageViewTopConstraint),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Size.imageViewLeadingConstraint),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Size.imageViewTrailingConstraint),
+            imageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: Size.imageViewBottomConstraint)
         ])
     }
 }

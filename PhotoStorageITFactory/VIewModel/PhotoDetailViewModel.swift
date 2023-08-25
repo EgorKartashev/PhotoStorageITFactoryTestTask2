@@ -1,9 +1,10 @@
 
-
 import Foundation
 import UIKit
 
-class PhotoDetailViewModel {
+
+
+final class PhotoDetailViewModel {
     var photo: Photo
     
     init(photo: Photo) {
@@ -14,6 +15,5 @@ class PhotoDetailViewModel {
         NetworkManager.shared.loadImage(photo: photo) { image in
             completion(image)
         }
-
     }
 }
