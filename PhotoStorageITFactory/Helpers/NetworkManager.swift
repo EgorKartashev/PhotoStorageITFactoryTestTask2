@@ -76,4 +76,27 @@ final class NetworkManager {
             }
         }
     }
+    
+    func configureCell(cell: FavoritePhotoCollectionViewCell, photo: Photo) {
+        if !photo.isFavorite{
+            cell.starImageView.image = UIImage(systemName: Constant.unFavorirephotoSystemImage)
+        } else {
+            cell.starImageView.image = UIImage(systemName: Constant.favorirephotoSystemImage)
+        }
+        if let cachedImage = ImageCache.shared.getImage(forKey: photo.thumbnailUrl) {
+            DispatchQueue.main.async {
+                cell.photoImageView.image = cachedImage
+                cell.titleLabel.text = photo.title
+            }
+        } else {
+            loadImage(photo: photo) { image in
+                guard let image = image else { return }
+                ImageCache.shared.setImage(image, forKey: photo.thumbnailUrl)
+                DispatchQueue.main.async {
+                    cell.photoImageView.image = image
+                    cell.titleLabel.text = photo.title
+                }
+            }
+        }
+    }
 }

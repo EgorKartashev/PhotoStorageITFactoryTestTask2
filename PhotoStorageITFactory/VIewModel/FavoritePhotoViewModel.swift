@@ -2,29 +2,29 @@
 import Foundation
 import UIKit
 
-final class FavoritePhotoViewModele {
-    var photo: Photo
+protocol FavoritePhotoViewModelProtocol {
+    var favoritePhotos: [Photo] { get }
+}
+
+final class FavoritePhotoViewModel: FavoritePhotoViewModelProtocol {
+    
     var favoritePhotos:[Photo] = []
+    var mainViewModel : MainViewModelProtocol
+    var updateUI: (() -> Void)?
     
-    init(photo: Photo) {
-        self.photo = photo
+    init(mainViewModel: MainViewModelProtocol) {
+        
+        self.mainViewModel = mainViewModel
     }
     
-    func loadImage(completion: @escaping (UIImage?) -> Void) {
-        NetworkManager.shared.loadImage(photo: photo) { image in
-            completion(image)
+    func refreshPhotos() {
+        let favoritePhotoIDs = UserDefaults.standard.stringArray(forKey: "favoritePhotoIDs") ?? []
+        favoritePhotos = favoritePhotoIDs.compactMap { id in
+            if let idInt = Int(id), let photo = mainViewModel.photos.first(where: { $0.id == idInt }) {
+                return photo
+            } else {return nil}
         }
+        print(favoritePhotos)
     }
     
-    func addToFavotirePhotos(photo: Photo){
-        if !favoritePhotos.contains(photo){
-            self.favoritePhotos.append(photo)
-        }
-    }
-    
-    func removeFromFavoritePhotos(photo: Photo) {
-        if let index = favoritePhotos.firstIndex(of: photo) {
-            favoritePhotos.remove(at: index)
-        }
-    }
 }

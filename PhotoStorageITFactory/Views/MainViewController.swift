@@ -1,26 +1,8 @@
-         // Доделать
-// добавить избранное в детейл вью контроллер и табБар?
-    // при добавление в массив избранное значение не сохраняется ( и еще надо сделать обновление основного массива и обновление колекшен вью)
-    // точенн сохраняется пока не уходить с детейлВС, плюсуется но не удаляется
-    // при добавление фото в массив наддо проверить на наличие в массиве?
-    // сделать феворитВС
-    // добавить таб бар с двумя контроллерами
-
-
-
-
-// сделать ассембли
-// протокол для мейн и фейворит вью моделей
-// проверка загрузки фото, дефолтное фото, обработка ошибок
-// переделать NetworkManager  на Result<Photo, Error >
-// добавить ReadMe на GitHub
-// перенести все во вьюмодели, убрать комменты и пробелы, выровнят код
+// Доделать
+// не передается массив фейворитФотос
 // вынести все константы в R  или Constants
-// перенести во вью модель все из фотоДетейлВС
-// убрать вьюмоедли в ассембли
 
-
-    // ДОПЫ
+// ДОПЫ
 // добавить фильтрацию
 // добавить пролистывание коллекции детейлВС
 // добавить спинер на главный экран загрузку и в детейл
@@ -31,14 +13,6 @@ import UIKit
 private enum Size {
     static let cellWidth: CGFloat = UIScreen.main.bounds.width - 80
     static let cellHeight: CGFloat = 150
-}
-
-protocol MainViewModelProtocol {
-    var photos: [Photo] { get }
-    var isLoadingData: Bool { get }
-    var updateUI: (() -> Void)? { get set }
-    func fetchPhotos()
-    
 }
 
 final class MainViewController: UIViewController {
@@ -54,12 +28,18 @@ final class MainViewController: UIViewController {
         return collectionView
     }()
     
-    private var viewModel: MainViewModel?
+    private lazy var toFavoriteVcButton: UIButton = makeToFavoriteVcButton()
+    
+    private var viewModel: MainViewModelProtocol?
     private let coordinator: MainCoordinator
     
     //MARK: - Lifecycles aunctions
     
-    init(coordinator: MainCoordinator) {
+    init(
+        viewModel: MainViewModelProtocol,
+        coordinator: MainCoordinator
+    ) {
+        self.viewModel = viewModel
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
@@ -69,6 +49,9 @@ final class MainViewController: UIViewController {
     }
     
     override func viewDidLoad() {
+        // УБРАТЬ ПОТОМ
+        UserDefaults.standard.removeObject(forKey: "favoritePhotoIDs")
+        
         super.viewDidLoad()
         setupViewModel()
         viewModel?.fetchPhotos()
@@ -76,21 +59,30 @@ final class MainViewController: UIViewController {
         setupDelegates()
         setupConstrants()
     }
+    //  УБРАТЬ
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("WillApear")
+        let favoritePhotoIDs = UserDefaults.standard.stringArray(forKey: "favoritePhotoIDs") ?? []
+        print(favoritePhotoIDs.count)
+    }
     
     //MARK: - Private Functions
     
     private func setupViewModel() {
-        viewModel = MainViewModel()
         viewModel?.updateUI = { [weak self] in
             DispatchQueue.main.async {
                 self?.collectionView.reloadData()
             }
         }
     }
+    
     //MARK: - UI
     
     private func setupViews(){
+        view.backgroundColor = .white
         view.addSubview(collectionView)
+        view.addSubview(toFavoriteVcButton)
     }
     
     private func setupDelegates(){
@@ -100,11 +92,29 @@ final class MainViewController: UIViewController {
     
     private func setupConstrants(){
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            toFavoriteVcButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            toFavoriteVcButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 100),
+            toFavoriteVcButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -100),
+            
+            collectionView.topAnchor.constraint(equalTo: toFavoriteVcButton.bottomAnchor,constant: 40),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
+    }
+    
+    func makeToFavoriteVcButton() -> UIButton {
+        let button = UIButton()
+        button.setTitle("Favorite", for: .normal)
+        button.layer.cornerRadius = 10
+        button.backgroundColor = .systemBlue
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(toFavoriteVC), for: .touchUpInside)
+        return button
+    }
+    
+    @objc private func toFavoriteVC() {
+        coordinator.showFavoriteViewController()
     }
 }
 
@@ -117,7 +127,7 @@ extension MainViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.photoCellID, for: indexPath) as? PhotoCollectionViewCell else {return UICollectionViewCell()}
-        guard let viewModel else { return UICollectionViewCell() }
+        guard let viewModel = viewModel else { return UICollectionViewCell() }
         cell.configure(photo: viewModel.photos[indexPath.row])
         return cell
     }
@@ -139,5 +149,11 @@ extension MainViewController: UICollectionViewDelegate {
                 viewModel.fetchPhotos()
             }
         }
+    }
+}
+
+extension MainViewController: PhotoDetailViewModelDelegate {
+    func photoDetailViewModelDidUpdateFavoriteState(viewModel: PhotoDetailViewModel) {
+        collectionView.reloadData()
     }
 }

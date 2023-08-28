@@ -2,6 +2,13 @@
 import Foundation
 import UIKit
 
+protocol MainViewModelProtocol {
+    var photos: [Photo] { get }
+    var isLoadingData: Bool { get }
+    var updateUI: (() -> Void)? { get set }
+    func fetchPhotos()
+}
+
 final class MainViewModel: MainViewModelProtocol {
     
     var photos: [Photo] = []

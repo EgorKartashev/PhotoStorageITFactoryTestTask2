@@ -19,12 +19,10 @@ final class PhotoDetailViewController: UIViewController {
     private lazy var favoriteButton = makeFavoriteButton()
     
     var viewModel: PhotoDetailViewModel?
-    // убрать отсюда
-    var viewModelF: FavoritePhotoViewModele?
     
-    init(viewModel: PhotoDetailViewModel, viewModelF: FavoritePhotoViewModele) {
+    init(viewModel: PhotoDetailViewModel, viewModelF: FavoritePhotoViewModel) {
         self.viewModel = viewModel
-        self.viewModelF = viewModelF
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -72,30 +70,20 @@ final class PhotoDetailViewController: UIViewController {
         button.layer.cornerRadius = 10
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.blue.cgColor
-        // изменить 
-        if let viewModel = viewModel {
-            let photo = viewModel.photo
-            button.addTarget(self, action: #selector(favoriteButtonPressed), for: .touchUpInside)
-        }
+        button.addTarget(self, action: #selector(favoriteButtonPressed), for: .touchUpInside)
         return button
     }
-  
+    
     @objc func favoriteButtonPressed() {
-        if let viewModel = viewModel, let viewModelF = viewModelF {
-            if !viewModel.photo.isFavorite{
-                favoriteButton.setTitle(ConstantFavVC.favoriteButtonTitle, for: .normal)
-                viewModel.photo.isFavorite.toggle()
-                starImageView.image = UIImage(systemName: ConstantFavVC.favoritePhotoSystemImage)
-               // let viewModeleF = FavoritePhotoViewModele(photo: viewModel.photo)
-                viewModelF.addToFavotirePhotos(photo: viewModel.photo)
-                print(viewModelF.favoritePhotos.count)
-            } else {
-                favoriteButton.setTitle(ConstantFavVC.unfavoriteButtonTitle, for: .normal)
-                viewModel.photo.isFavorite.toggle()
-                starImageView.image = UIImage(systemName: ConstantFavVC.unFavoritePhotoSystemImage)
-                viewModelF.removeFromFavoritePhotos(photo: viewModel.photo)
-                print(viewModelF.favoritePhotos.count)
-            }
+        viewModel?.toggleFavorite()
+        updateFavoriteButtonState()
+    }
+    
+    private func updateFavoriteButtonState() {
+        if let viewModel = viewModel {
+            let isFavorite = viewModel.photo.isFavorite
+            favoriteButton.setTitle(isFavorite ? ConstantFavVC.favoriteButtonTitle : ConstantFavVC.unfavoriteButtonTitle, for: .normal)
+            starImageView.image = UIImage(systemName: isFavorite ? ConstantFavVC.favoritePhotoSystemImage : ConstantFavVC.unFavoritePhotoSystemImage)
         }
     }
     

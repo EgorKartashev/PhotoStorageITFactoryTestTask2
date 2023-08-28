@@ -18,14 +18,21 @@ class MainCoordinator: Coordinator {
     }
 
     func start() {
-        let mainViewController = MainViewController(coordinator: self)
+        let viewModel = MainViewModel()
+        let mainViewController = MainViewController(viewModel: viewModel, coordinator: self)
         navigationController.pushViewController(mainViewController, animated: false)
     }
 
     func showPhotoDetail(photo: Photo) {
+        let viewModele = MainViewModel()
         let photoDetailViewModel = PhotoDetailViewModel(photo: photo)
-        let favoritePhotoViewModele = FavoritePhotoViewModele(photo: photo)
+        let favoritePhotoViewModele = FavoritePhotoViewModel(mainViewModel: viewModele)
         let photoDetailViewController = PhotoDetailViewController(viewModel: photoDetailViewModel, viewModelF: favoritePhotoViewModele)
         navigationController.pushViewController(photoDetailViewController, animated: true)
+    }
+    
+    func showFavoriteViewController() {
+        let favoriteViewController = FavoritePhotoViewController(coordinator: self)
+        navigationController.pushViewController(favoriteViewController, animated: true)
     }
 }

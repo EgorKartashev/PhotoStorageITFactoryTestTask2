@@ -15,12 +15,12 @@ final class FavoritePhotoViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: Size.cellWidth, height: Size.cellHeight)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(PhotoCollectionViewCell.self, forCellWithReuseIdentifier: PhotoCollectionViewCell.photoCellID)
+        collectionView.register(FavoritePhotoCollectionViewCell.self, forCellWithReuseIdentifier: FavoritePhotoCollectionViewCell.cellId)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
     
-    private var viewModel: MainViewModel?
+    private var viewModel: FavoritePhotoViewModel?
     private let coordinator: MainCoordinator
     
     //MARK: - Lifecycles aunctions
@@ -37,7 +37,7 @@ final class FavoritePhotoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViewModel()
-        viewModel?.fetchPhotos()
+        viewModel?.refreshPhotos()
         setupViews()
         setupDelegates()
         setupConstrants()
@@ -46,7 +46,8 @@ final class FavoritePhotoViewController: UIViewController {
     //MARK: - Private Functions
     
     private func setupViewModel() {
-        viewModel = MainViewModel()
+        let mainViewModele = MainViewModel()
+        viewModel = FavoritePhotoViewModel(mainViewModel: mainViewModele)
         viewModel?.updateUI = { [weak self] in
             DispatchQueue.main.async {
                 self?.collectionView.reloadData()
@@ -78,13 +79,13 @@ final class FavoritePhotoViewController: UIViewController {
 
 extension FavoritePhotoViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel?.favoritePhotos.count ?? 0
+        viewModel?.favoritePhotos.count ?? 3
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.photoCellID, for: indexPath) as? PhotoCollectionViewCell else {return UICollectionViewCell()}
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FavoritePhotoCollectionViewCell.cellId, for: indexPath) as? FavoritePhotoCollectionViewCell else {return UICollectionViewCell()}
         guard let viewModel else { return UICollectionViewCell() }
-        cell.configure(photo: viewModel.photos[indexPath.row])
+        cell.configure(photo: viewModel.favoritePhotos[indexPath.row])
         return cell
     }
 }
@@ -94,16 +95,6 @@ extension FavoritePhotoViewController: UICollectionViewDataSource {
 extension FavoritePhotoViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let viewModel = viewModel else { return }
-        coordinator.showPhotoDetail(photo: viewModel.photos[indexPath.row])
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let position = scrollView.contentOffset.y
-        let distanceToBottom = collectionView.contentSize.height - position - scrollView.frame.size.height
-        if let viewModel = viewModel{
-            if distanceToBottom < 100 && !viewModel.isLoadingData {
-                viewModel.fetchPhotos()
-            }
-        }
+        coordinator.showPhotoDetail(photo: viewModel.favoritePhotos[indexPath.row])
     }
 }
