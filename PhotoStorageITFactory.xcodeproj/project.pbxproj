@@ -10,6 +10,9 @@
 		7423861A2A98ABFA001F09DE /* R.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742386192A98ABFA001F09DE /* R.swift */; };
 		7423861C2A992C1A001F09DE /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7423861B2A992C1A001F09DE /* Coordinator.swift */; };
 		7442179B2A972BCB0070015E /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7442179A2A972BCB0070015E /* ImageCache.swift */; };
+		7447EB9E2A9A4AF1000F6409 /* FavoritePhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7447EB9D2A9A4AF1000F6409 /* FavoritePhotoViewController.swift */; };
+		7447EBA02A9A4C18000F6409 /* FavoritePhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7447EB9F2A9A4C18000F6409 /* FavoritePhotoCollectionViewCell.swift */; };
+		744BF9EC2A9B3FAA0018E49D /* FavoritePhotoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744BF9EB2A9B3FAA0018E49D /* FavoritePhotoViewModel.swift */; };
 		748C87582A95D9A700DFB04B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 748C87572A95D9A700DFB04B /* AppDelegate.swift */; };
 		748C875A2A95D9A700DFB04B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 748C87592A95D9A700DFB04B /* SceneDelegate.swift */; };
 		748C87612A95D9A800DFB04B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 748C87602A95D9A800DFB04B /* Assets.xcassets */; };
@@ -27,6 +30,9 @@
 		742386192A98ABFA001F09DE /* R.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = R.swift; sourceTree = "<group>"; };
 		7423861B2A992C1A001F09DE /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		7442179A2A972BCB0070015E /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		7447EB9D2A9A4AF1000F6409 /* FavoritePhotoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePhotoViewController.swift; sourceTree = "<group>"; };
+		7447EB9F2A9A4C18000F6409 /* FavoritePhotoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePhotoCollectionViewCell.swift; sourceTree = "<group>"; };
+		744BF9EB2A9B3FAA0018E49D /* FavoritePhotoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritePhotoViewModel.swift; sourceTree = "<group>"; };
 		748C87542A95D9A700DFB04B /* PhotoStorageITFactory.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoStorageITFactory.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		748C87572A95D9A700DFB04B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		748C87592A95D9A700DFB04B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -107,6 +113,7 @@
 			children = (
 				748C876B2A95DA9E00DFB04B /* MainViewController.swift */,
 				748C87732A95DFED00DFB04B /* PhotoDetailViewController.swift */,
+				7447EB9D2A9A4AF1000F6409 /* FavoritePhotoViewController.swift */,
 				748C877E2A95E54D00DFB04B /* Cell */,
 			);
 			path = Views;
@@ -117,6 +124,7 @@
 			children = (
 				748C87712A95DF4C00DFB04B /* MainViewModel.swift */,
 				748C87752A95E01900DFB04B /* PhotoDetailViewModel.swift */,
+				744BF9EB2A9B3FAA0018E49D /* FavoritePhotoViewModel.swift */,
 			);
 			path = VIewModel;
 			sourceTree = "<group>";
@@ -143,6 +151,7 @@
 			isa = PBXGroup;
 			children = (
 				748C877C2A95E22000DFB04B /* PhotoCollectionViewCell.swift */,
+				7447EB9F2A9A4C18000F6409 /* FavoritePhotoCollectionViewCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -222,9 +231,12 @@
 				748C87762A95E01900DFB04B /* PhotoDetailViewModel.swift in Sources */,
 				748C87722A95DF4C00DFB04B /* MainViewModel.swift in Sources */,
 				748C87702A95DD2800DFB04B /* NetworkManager.swift in Sources */,
+				7447EBA02A9A4C18000F6409 /* FavoritePhotoCollectionViewCell.swift in Sources */,
+				7447EB9E2A9A4AF1000F6409 /* FavoritePhotoViewController.swift in Sources */,
 				748C87582A95D9A700DFB04B /* AppDelegate.swift in Sources */,
 				7442179B2A972BCB0070015E /* ImageCache.swift in Sources */,
 				748C875A2A95D9A700DFB04B /* SceneDelegate.swift in Sources */,
+				744BF9EC2A9B3FAA0018E49D /* FavoritePhotoViewModel.swift in Sources */,
 				748C877D2A95E22000DFB04B /* PhotoCollectionViewCell.swift in Sources */,
 				748C876C2A95DA9E00DFB04B /* MainViewController.swift in Sources */,
 				748C87742A95DFED00DFB04B /* PhotoDetailViewController.swift in Sources */,

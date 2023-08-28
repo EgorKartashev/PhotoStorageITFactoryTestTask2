@@ -3,7 +3,7 @@ import UIKit
 
 //MARK: - Private constants
 
-private enum Size {
+private enum Constants {
     static let cornerRadius: CGFloat = 10
     static let borderWidth: CGFloat = 1
     static let labelLeadingConstraint: CGFloat = 16
@@ -17,6 +17,7 @@ final class PhotoCollectionViewCell: UICollectionViewCell {
     //MARK: - Private propertise
     
     lazy var photoImageView = makePhotoImage()
+    lazy var starImageView = makeStarImage()
     lazy var titleLabel = makeTitleLabel()
     
     private var imageLoadingTask: URLSessionTask?
@@ -48,12 +49,14 @@ final class PhotoCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(photoImageView)
         contentView.addSubview(titleLabel)
+        contentView.addSubview(starImageView)
         
         photoImageView.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        starImageView.translatesAutoresizingMaskIntoConstraints = false
         
-        contentView.layer.cornerRadius = Size.cornerRadius
-        contentView.layer.borderWidth = Size.borderWidth
+        contentView.layer.cornerRadius = Constants.cornerRadius
+        contentView.layer.borderWidth = Constants.borderWidth
         contentView.layer.borderColor = UIColor.black.cgColor
         contentView.clipsToBounds = true
         
@@ -61,12 +64,15 @@ final class PhotoCollectionViewCell: UICollectionViewCell {
             photoImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             photoImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             photoImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            photoImageView.widthAnchor.constraint(equalToConstant: Size.photoImageHeigthConstraint),
+            photoImageView.widthAnchor.constraint(equalToConstant: Constants.photoImageHeigthConstraint),
             
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor),
-            titleLabel.leadingAnchor.constraint(equalTo: photoImageView.trailingAnchor, constant: Size.labelLeadingConstraint),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: Size.labelTrailingConstraint),
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            titleLabel.leadingAnchor.constraint(equalTo: photoImageView.trailingAnchor, constant: Constants.labelLeadingConstraint),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor,constant: Constants.labelTrailingConstraint),
             titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
+            starImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            starImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
         ])
     }
     
@@ -80,8 +86,13 @@ final class PhotoCollectionViewCell: UICollectionViewCell {
     
     func makeTitleLabel() -> UILabel {
         let label = UILabel()
-        label.numberOfLines = Size.numberOfLinesTitleLabel
+        label.numberOfLines = Constants.numberOfLinesTitleLabel
         return label
+    }
+    
+    func makeStarImage() -> UIImageView{
+        let imageView = UIImageView()
+        return imageView
     }
     
     func configure(photo: Photo) {

@@ -1,21 +1,33 @@
 
 import Foundation
+import UIKit
 
-final class MainViewModel {
+final class MainViewModel: MainViewModelProtocol {
     
     var photos: [Photo] = []
+    var favoritePhotos: [Photo] = []
     var updateUI: (() -> Void)?
+    var isLoadingData = false
     
     func photoTitle(at index: Int) -> String {
         photos[index].title
     }
     
     func fetchPhotos() {
-        NetworkManager.shared.fetchPhotos { [weak self] photos in
-            if let photos = photos {
+        isLoadingData.toggle()
+        
+        NetworkManager.shared.fetchPhotos(albumID: NetworkManager.shared.albumId) { [weak self] result in
+            switch result {
+            case.success(let photos):
                 self?.photos.append(contentsOf: photos)
                 self?.updateUI?()
+            case.failure(let error):
+                print(error.localizedDescription)
             }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.isLoadingData.toggle()
         }
     }
 }
+

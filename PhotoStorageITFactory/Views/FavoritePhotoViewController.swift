@@ -1,29 +1,3 @@
-         // Доделать
-// добавить избранное в детейл вью контроллер и табБар?
-    // при добавление в массив избранное значение не сохраняется ( и еще надо сделать обновление основного массива и обновление колекшен вью)
-    // точенн сохраняется пока не уходить с детейлВС, плюсуется но не удаляется
-    // при добавление фото в массив наддо проверить на наличие в массиве?
-    // сделать феворитВС
-    // добавить таб бар с двумя контроллерами
-
-
-
-
-// сделать ассембли
-// протокол для мейн и фейворит вью моделей
-// проверка загрузки фото, дефолтное фото, обработка ошибок
-// переделать NetworkManager  на Result<Photo, Error >
-// добавить ReadMe на GitHub
-// перенести все во вьюмодели, убрать комменты и пробелы, выровнят код
-// вынести все константы в R  или Constants
-// перенести во вью модель все из фотоДетейлВС
-// убрать вьюмоедли в ассембли
-
-
-    // ДОПЫ
-// добавить фильтрацию
-// добавить пролистывание коллекции детейлВС
-// добавить спинер на главный экран загрузку и в детейл
 
 import UIKit
 //MARK: - Private constants
@@ -33,15 +7,7 @@ private enum Size {
     static let cellHeight: CGFloat = 150
 }
 
-protocol MainViewModelProtocol {
-    var photos: [Photo] { get }
-    var isLoadingData: Bool { get }
-    var updateUI: (() -> Void)? { get set }
-    func fetchPhotos()
-    
-}
-
-final class MainViewController: UIViewController {
+final class FavoritePhotoViewController: UIViewController {
     
     //MARK: - Private propertise
     
@@ -110,9 +76,9 @@ final class MainViewController: UIViewController {
 
 //MARK: - Data Source
 
-extension MainViewController: UICollectionViewDataSource {
+extension FavoritePhotoViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel?.photos.count ?? 0
+        viewModel?.favoritePhotos.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -125,7 +91,7 @@ extension MainViewController: UICollectionViewDataSource {
 
 //MARK: - Delegate
 
-extension MainViewController: UICollectionViewDelegate {
+extension FavoritePhotoViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let viewModel = viewModel else { return }
         coordinator.showPhotoDetail(photo: viewModel.photos[indexPath.row])

@@ -24,7 +24,8 @@ class MainCoordinator: Coordinator {
 
     func showPhotoDetail(photo: Photo) {
         let photoDetailViewModel = PhotoDetailViewModel(photo: photo)
-        let photoDetailViewController = PhotoDetailViewController(viewModel: photoDetailViewModel)
+        let favoritePhotoViewModele = FavoritePhotoViewModele(photo: photo)
+        let photoDetailViewController = PhotoDetailViewController(viewModel: photoDetailViewModel, viewModelF: favoritePhotoViewModele)
         navigationController.pushViewController(photoDetailViewController, animated: true)
     }
 }

@@ -2,23 +2,34 @@
 import Foundation
 import UIKit
 
+enum Constant {
+    static let numberOfCells = 10
+    static let favorirephotoSystemImage: String = "star.fill"
+    static let unFavorirephotoSystemImage: String = "star"
+}
+
 final class NetworkManager {
+    
     static let shared = NetworkManager()
+    
+    var albumId = 1
     
     private init() {}
     
-    func fetchPhotos(completion: @escaping ([Photo]?) -> Void) {
+    func fetchPhotos(albumID: Int, completion: @escaping (Result<[Photo], Error>) -> Void) {
         guard let url = URL(string: R.Url.urlJson) else { return }
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
                 print(R.Errors.errorFetch + "\(error)")
+                completion(.failure(error))
                 return
             }
             guard let data = data else {return}
-            
             do {
                 let photos = try JSONDecoder().decode([Photo].self, from: data)
-                completion(photos)
+                let photosForAlbum = photos.filter { $0.albumId == self.albumId }
+                completion(.success(photosForAlbum))
+                self.albumId += 1
             } catch {
                 print(R.Errors.errorDecod + "\(error)")
             }
@@ -44,9 +55,16 @@ final class NetworkManager {
     }
     
     func configureCell(cell: PhotoCollectionViewCell, photo: Photo) {
+        if !photo.isFavorite{
+            cell.starImageView.image = UIImage(systemName: Constant.unFavorirephotoSystemImage)
+        } else {
+            cell.starImageView.image = UIImage(systemName: Constant.favorirephotoSystemImage)
+        }
         if let cachedImage = ImageCache.shared.getImage(forKey: photo.thumbnailUrl) {
-            cell.photoImageView.image = cachedImage
-            cell.titleLabel.text = photo.title
+            DispatchQueue.main.async {
+                cell.photoImageView.image = cachedImage
+                cell.titleLabel.text = photo.title
+            }
         } else {
             loadImage(photo: photo) { image in
                 guard let image = image else { return }
