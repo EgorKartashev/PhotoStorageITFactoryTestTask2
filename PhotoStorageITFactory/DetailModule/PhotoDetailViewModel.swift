@@ -20,22 +20,27 @@ final class PhotoDetailViewModel: PhotoDetailViewModelProtocol {
     }
     
     func loadImage(completion: @escaping (UIImage?) -> Void) {
-        NetworkManager.shared.loadImage(photo: photo) { image in
-            completion(image)
+        NetworkManager.shared.loadImage(photo: photo) { result in
+            switch result {
+            case .success(let image):
+                completion(image)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
         }
     }
     
     func toggleFavorite() {
         photo.isFavorite.toggle()
         if photo.isFavorite {
-            var favoritePhotoIDs = UserDefaults.standard.stringArray(forKey: "favoritePhotoIDs") ?? []
+            var favoritePhotoIDs = UserDefaults.standard.stringArray(forKey: Resources.KeyUserDefaults.favoritePhotoIDs) ?? []
             favoritePhotoIDs.append(String(photo.id))
-            UserDefaults.standard.set(favoritePhotoIDs, forKey: "favoritePhotoIDs")
+            UserDefaults.standard.set(favoritePhotoIDs, forKey: Resources.KeyUserDefaults.favoritePhotoIDs)
         } else {
-            var favoritePhotoIDs = UserDefaults.standard.stringArray(forKey: "favoritePhotoIDs") ?? []
+            var favoritePhotoIDs = UserDefaults.standard.stringArray(forKey: Resources.KeyUserDefaults.favoritePhotoIDs) ?? []
             if let index = favoritePhotoIDs.firstIndex(of: String(photo.id)) {
                 favoritePhotoIDs.remove(at: index)
-                UserDefaults.standard.set(favoritePhotoIDs, forKey: "favoritePhotoIDs")
+                UserDefaults.standard.set(favoritePhotoIDs, forKey: Resources.KeyUserDefaults.favoritePhotoIDs)
             }
         }
         delegate?.photoDetailViewModelDidUpdateFavoriteState(viewModel: self)

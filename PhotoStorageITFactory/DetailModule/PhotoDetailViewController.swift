@@ -1,11 +1,20 @@
 
 import UIKit
 
-private enum ConstantFavVC {
-    static let imageViewTopConstraint: CGFloat = 40
-    static let imageViewLeadingConstraint: CGFloat = 40
-    static let imageViewTrailingConstraint: CGFloat = -40
-    static let imageViewBottomConstraint: CGFloat = -40
+private enum Size {
+    static let imageViewTopConstraint: CGFloat = 100
+    static let imageViewLeadingConstraint: CGFloat = 16
+    static let imageViewTrailingConstraint: CGFloat = -16
+    static let favoriteButtonTopConstraint: CGFloat = 16
+    static let favoriteButtonLeadingConstraint: CGFloat = 16
+    static let favoriteButtonTrailingConstraint: CGFloat = -16
+    static let starImageViewTopConstraint: CGFloat = 6
+    static let starImageViewTrailingConstraint: CGFloat = -16
+    static let starImageViewBottomConstraint: CGFloat = -6
+
+    static let cornerRadius: CGFloat = 10
+    static let widthBorder: CGFloat = 1
+    
     static let favoritePhotoSystemImage: String = "star.fill"
     static let unFavoritePhotoSystemImage: String = "star"
     static let unfavoriteButtonTitle: String = "Add to Favorite Photos"
@@ -52,7 +61,7 @@ final class PhotoDetailViewController: UIViewController {
     
     func makeStarImage() -> UIImageView{
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: ConstantFavVC.unFavoritePhotoSystemImage)
+        imageView.image = UIImage(systemName: Size.unFavoritePhotoSystemImage)
         return imageView
     }
     
@@ -60,15 +69,15 @@ final class PhotoDetailViewController: UIViewController {
         let button = UIButton()
         if let viewModel = viewModel{
             if !viewModel.photo.isFavorite {
-                button.setTitle(ConstantFavVC.unfavoriteButtonTitle, for: .normal)
+                button.setTitle(Size.unfavoriteButtonTitle, for: .normal)
             } else {
-                button.setTitle(ConstantFavVC.favoriteButtonTitle, for: .normal)
+                button.setTitle(Size.favoriteButtonTitle, for: .normal)
             }
         }
         button.setTitleColor(.blue, for: .normal)
         button.backgroundColor = .white
-        button.layer.cornerRadius = 10
-        button.layer.borderWidth = 1
+        button.layer.cornerRadius = Size.cornerRadius
+        button.layer.borderWidth = Size.widthBorder
         button.layer.borderColor = UIColor.blue.cgColor
         button.addTarget(self, action: #selector(favoriteButtonPressed), for: .touchUpInside)
         return button
@@ -82,8 +91,8 @@ final class PhotoDetailViewController: UIViewController {
     private func updateFavoriteButtonState() {
         if let viewModel = viewModel {
             let isFavorite = viewModel.photo.isFavorite
-            favoriteButton.setTitle(isFavorite ? ConstantFavVC.favoriteButtonTitle : ConstantFavVC.unfavoriteButtonTitle, for: .normal)
-            starImageView.image = UIImage(systemName: isFavorite ? ConstantFavVC.favoritePhotoSystemImage : ConstantFavVC.unFavoritePhotoSystemImage)
+            favoriteButton.setTitle(isFavorite ? Size.favoriteButtonTitle : Size.unfavoriteButtonTitle, for: .normal)
+            starImageView.image = UIImage(systemName: isFavorite ? Size.favoritePhotoSystemImage : Size.unFavoritePhotoSystemImage)
         }
     }
     
@@ -98,19 +107,18 @@ final class PhotoDetailViewController: UIViewController {
         starImageView.translatesAutoresizingMaskIntoConstraints = false
         favoriteButton.translatesAutoresizingMaskIntoConstraints = false
         
-        // ВЫНЕСТИ ВСЕ В КОНСТАНТЫ
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
-            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant:  16),
-            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: Size.imageViewTopConstraint),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant:  Size.imageViewLeadingConstraint),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Size.imageViewTrailingConstraint),
             
-            favoriteButton.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 16),
-            favoriteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            favoriteButton.trailingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: -16),
+            favoriteButton.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: Size.favoriteButtonTopConstraint),
+            favoriteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Size.favoriteButtonLeadingConstraint),
+            favoriteButton.trailingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: Size.favoriteButtonTrailingConstraint),
             
-            starImageView.topAnchor.constraint(equalTo: favoriteButton.topAnchor,constant: 6),
-            starImageView.trailingAnchor.constraint(equalTo: favoriteButton.trailingAnchor, constant: -16),
-            starImageView.bottomAnchor.constraint(equalTo: favoriteButton.bottomAnchor, constant: -6),
+            starImageView.topAnchor.constraint(equalTo: favoriteButton.topAnchor,constant: Size.starImageViewTopConstraint),
+            starImageView.trailingAnchor.constraint(equalTo: favoriteButton.trailingAnchor, constant: Size.starImageViewTrailingConstraint),
+            starImageView.bottomAnchor.constraint(equalTo: favoriteButton.bottomAnchor, constant: Size.starImageViewBottomConstraint),
         ])
     }
 }
