@@ -99,8 +99,33 @@ class FavoritePhotoCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(photo: Photo) {
-        NetworkManager.shared.configureCell(cell: self, photo: photo)
+        if !photo.isFavorite{
+            starImageView.image = UIImage(systemName: Resources.SystemImages.unFavorirephotoSystemImage)
+        } else {
+            starImageView.image = UIImage(systemName: Resources.SystemImages.favorirephotoSystemImage)
+        }
+        if let cachedImage = ImageCache.shared.getImage(forKey: photo.thumbnailUrl) {
+            DispatchQueue.main.async {
+                self.photoImageView.image = cachedImage
+                self.titleLabel.text = photo.title
+            }
+        } else {
+            NetworkManager.shared.loadImage(photo: photo) { result in
+                switch result {
+                case .success(let image):
+                    ImageCache.shared.setImage(image, forKey: photo.thumbnailUrl)
+                    DispatchQueue.main.async {
+                        self.photoImageView.image = image
+                        self.titleLabel.text = photo.title
+                    }
+                case .failure(let error):
+                    // СДЕЛАТЬ АЛЕРТ?
+                    print("Alert ошибка получения данных", error.localizedDescription)
+                }
+            }
+        }
     }
 }
+
 
 

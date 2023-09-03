@@ -8,7 +8,7 @@ protocol PhotoDetailViewModelProtocol {
 }
 
 protocol PhotoDetailViewModelDelegate: AnyObject {
-    func photoDetailViewModelDidUpdateFavoriteState(viewModel: PhotoDetailViewModel)
+    func photoDetailViewModelDidUpdateFavoriteState(viewModel: PhotoDetailViewModel, isFavorite: Bool)
 }
 
 final class PhotoDetailViewModel: PhotoDetailViewModelProtocol {
@@ -30,6 +30,11 @@ final class PhotoDetailViewModel: PhotoDetailViewModelProtocol {
         }
     }
     
+    func favoriteButtonPressed(){
+        toggleFavorite()
+        updateFavoriteButtonState()
+    }
+    
     func toggleFavorite() {
         photo.isFavorite.toggle()
         if photo.isFavorite {
@@ -43,8 +48,12 @@ final class PhotoDetailViewModel: PhotoDetailViewModelProtocol {
                 UserDefaults.standard.set(favoritePhotoIDs, forKey: Resources.KeyUserDefaults.favoritePhotoIDs)
             }
         }
-        delegate?.photoDetailViewModelDidUpdateFavoriteState(viewModel: self)
+        delegate?.photoDetailViewModelDidUpdateFavoriteState(viewModel: self, isFavorite: photo.isFavorite)
     }
     
+    func updateFavoriteButtonState() {
+        let isFavorite = photo.isFavorite
+        delegate?.photoDetailViewModelDidUpdateFavoriteState(viewModel: self, isFavorite: isFavorite)
+    }
     
 }

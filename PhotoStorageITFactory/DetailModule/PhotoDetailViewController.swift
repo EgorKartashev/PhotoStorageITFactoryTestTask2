@@ -29,7 +29,7 @@ final class PhotoDetailViewController: UIViewController {
     
     var viewModel: PhotoDetailViewModel?
     
-    init(viewModel: PhotoDetailViewModel, viewModelF: FavoritePhotoViewModel) {
+    init(viewModel: PhotoDetailViewModel) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
@@ -41,6 +41,7 @@ final class PhotoDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel?.delegate = self
         setupUI()
         setupImage()
     }
@@ -84,16 +85,7 @@ final class PhotoDetailViewController: UIViewController {
     }
     
     @objc func favoriteButtonPressed() {
-        viewModel?.toggleFavorite()
-        updateFavoriteButtonState()
-    }
-    
-    private func updateFavoriteButtonState() {
-        if let viewModel = viewModel {
-            let isFavorite = viewModel.photo.isFavorite
-            favoriteButton.setTitle(isFavorite ? Size.favoriteButtonTitle : Size.unfavoriteButtonTitle, for: .normal)
-            starImageView.image = UIImage(systemName: isFavorite ? Size.favoritePhotoSystemImage : Size.unFavoritePhotoSystemImage)
-        }
+        viewModel?.favoriteButtonPressed()
     }
     
     private func setupUI(){
@@ -120,5 +112,13 @@ final class PhotoDetailViewController: UIViewController {
             starImageView.trailingAnchor.constraint(equalTo: favoriteButton.trailingAnchor, constant: Size.starImageViewTrailingConstraint),
             starImageView.bottomAnchor.constraint(equalTo: favoriteButton.bottomAnchor, constant: Size.starImageViewBottomConstraint),
         ])
+    }
+}
+
+
+extension PhotoDetailViewController: PhotoDetailViewModelDelegate{
+    func photoDetailViewModelDidUpdateFavoriteState(viewModel: PhotoDetailViewModel, isFavorite: Bool) {
+        favoriteButton.setTitle(isFavorite ? Size.favoriteButtonTitle : Size.unfavoriteButtonTitle, for: .normal)
+        starImageView.image = UIImage(systemName: isFavorite ? Resources.SystemImages.favorirephotoSystemImage : Resources.SystemImages.unFavorirephotoSystemImage)
     }
 }

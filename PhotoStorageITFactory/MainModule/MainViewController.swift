@@ -1,47 +1,38 @@
 
     // Доделать
 
-// вынести все логику и константы из NetworkManager во вью модель
+    // Избранное
+//сохранять айди измененого фото
+// когда открываю экран мейнВс релоад дата, при этом написать функцию, которая из массива photo исверяет с массивом favoritePhotos и меняет значение id массиве, затем релоад дата, и еще при этом при построении коллекции, должна быть проверка на isFavorite
+
+// ?сделать фото менеджер (модель)
+
+// написать функцию загрузки фото по albumID в нетворк менеджере и loadMore
+// сделать что бы перерисовывалась и коллекция на MainVC и соотвественно менялся массив photos  во вью модели
+// переписать дидскролл в MainViewController
 
 // Избранное сделать
 // добавить фильтрацию
 // добавить алерты при ошибке загрузки фото?
 // убрать комменты, выровнять, запушить
+// мейн ассембли для феворит фото
 
  //****************** ОШИБКИ **************
 
     // 1. Архитектура
 
-// Например MainViewControoler в viewdidload вызывается метод вьюмодели по загрузке элементов с сети, это должна делать сама вью модель, вью ничего не должно знать о логике.
-// Так же в PhotoCollectionViewCell идет конфигурация вообще через сервис работы с сетью, этот сервис вообще о вью знать не должен.
-// Так же сервис по работе с сетью хранит в себе айдишники альбомов, тоесть тоже информацию которую знать не должен, это должно быть в модели.
-// Создал MainAssembly для конфигурации модуля главного экрана но не использовал его и для других экранов не стал такое делать.
 // Не очень понравилась связь вьюмодели с моделью через клоужеры, при большом приложении это будет не удобно
 
 
-    // 2. Работа с сетью
-
-// Тут все грустно, все сделано в лоб без ассинхрлонности и соответсвенно все ужасно глючит при работе приложения. Каждый раз при подгрузке пр скроллинге скачиваются все 5000 фоток и просто фильтрует часть. В общем очень плохо
-// Ошибки не выводятся пользователю и никак не обрабатываются
 
 //****************** ВОПРОСЫ **************
-
-
-
-
+// протокол инпут аутпут что такое?
+// почему при закрытии детейлВС картинка задерживается на экране как будто
+// надо ли переносить пострение ячейки в Assembly?
+// корректно ли вызывать конфигур ячейки как сделал я, возвращая ячейку как результат?
+// правильно ли работает вью модель в детейл?
 
 //****************** МОИ ИДЕИ **************
-
-// изменить все ниже на ID вместо Photo
-// написать user defaults который грузит множество <Set> Photo
-// функция в MemoryManagere? (МайнВьюМодели) которая сохраняет массив Photo в userDeafaults и выгружает его оттуда
-// функция которая принимает photo как параметр, выгружает массив Photo  и меняет значение isFavorite  у этого фото по id и загружает обратно в UserDefaults
-// 2 функции с параметрами Photo, одна выгружает массив favoritePgotos из UserDefaults записывает туда фото и загружает обратно, другая то же самое только удаляет по id
-
-// не обновляется главная коллекция после DetailVIewController
-// почему после юзерДефолтс массив фейворитФото пусто, проверить что выгружается из Юзер дефолтс
-// вынести все константы в R  или Constants
-
 
 
 import UIKit
@@ -93,12 +84,11 @@ final class MainViewController: UIViewController {
     override func viewDidLoad() {
         // УБРАТЬ ПОТОМ
         UserDefaults.standard.removeObject(forKey: "favoritePhotoIDs")
-        // вьюшка должна говорить вьмодели что она загрузилась как это сделаьть?
-        // протокол инпут аутпут что такое?
-        // вью модель должна знать в каком она состоянии лоадинг, фетч и тд,
+        
+        
         super.viewDidLoad()
         setupViewModel()
-        viewModel?.fetchPhotos()
+        viewModel?.viewDidLoad()
         setupViews()
         setupDelegates()
         setupConstrants()
@@ -112,11 +102,7 @@ final class MainViewController: UIViewController {
     //MARK: - Private Functions
     
     private func setupViewModel() {
-        viewModel?.updateUI = { [weak self] in
-            DispatchQueue.main.async {
-                self?.collectionView.reloadData()
-            }
-        }
+        viewModel?.delegate = self
     }
     
     //MARK: - UI
@@ -164,13 +150,14 @@ final class MainViewController: UIViewController {
 
 extension MainViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel?.photos.count ?? 0
+    print("КОЛИЧСТВО ФОТО", viewModel?.photos.count ?? 0)
+      return viewModel?.photos.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.photoCellID, for: indexPath) as? PhotoCollectionViewCell else {return UICollectionViewCell()}
         guard let viewModel = viewModel else { return UICollectionViewCell() }
-        cell.configure(photo: viewModel.photos[indexPath.row])
+        cell.configure(photo: viewModel.photos[indexPath.row], viewModele: viewModel, cell: cell)
         return cell
     }
 }
@@ -183,19 +170,35 @@ extension MainViewController: UICollectionViewDelegate {
         coordinator.showPhotoDetail(photo: viewModel.photos[indexPath.row])
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let position = scrollView.contentOffset.y
-        let distanceToBottom = collectionView.contentSize.height - position - scrollView.frame.size.height
-        if let viewModel = viewModel{
-            if distanceToBottom < 100 && !viewModel.isLoadingData {
-                viewModel.fetchPhotos()
-            }
-        }
-    }
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        let position = scrollView.contentOffset.y
+//        let distanceToBottom = collectionView.contentSize.height - position - scrollView.frame.size.height
+//        if let viewModel = viewModel{
+//            if distanceToBottom < 100 && !viewModel.isLoadingData {
+//                viewModel.fetchPhotos()
+//            }
+//        }
+//    }
 }
 
 extension MainViewController: PhotoDetailViewModelDelegate {
-    func photoDetailViewModelDidUpdateFavoriteState(viewModel: PhotoDetailViewModel) {
+    func photoDetailViewModelDidUpdateFavoriteState(viewModel: PhotoDetailViewModel, isFavorite: Bool) {
         collectionView.reloadData()
     }
+}
+
+extension MainViewController: MainViewRepresentableProtocol {
+    func viewStateChanged(state: MainViewState) {
+        switch state{
+        case .loading:
+            print("Loading")
+        case .loaded(let photos):
+            self.viewModel?.photos = photos
+            collectionView.reloadData()
+        case .error(let error):
+            print(error)
+        }
+    }
+    
+    
 }

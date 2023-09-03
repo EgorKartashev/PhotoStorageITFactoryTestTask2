@@ -18,4 +18,9 @@ enum Resources {
         static let favoritePhotoIDs = "favoritePhotoIDs"
     }
     
+    enum SystemImages {
+        static let favorirephotoSystemImage: String = "star.fill"
+        static let unFavorirephotoSystemImage: String = "star"
+    }
+    
 }

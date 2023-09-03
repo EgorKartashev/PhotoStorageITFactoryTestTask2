@@ -2,7 +2,7 @@
 import Foundation
 
 class MainAssembly {
-    static func createModule(with coordinator: MainCoordinator) -> MainViewController {
+    static func createMainViewController(with coordinator: MainCoordinator) -> MainViewController {
         let mainViewModel = MainViewModel()
         
         let viewController = MainViewController(
@@ -10,6 +10,12 @@ class MainAssembly {
             coordinator: coordinator
         )
         return viewController
+    }
+    static func createPhotoDetailController(with coordinator: MainCoordinator,photo: Photo) -> PhotoDetailViewController {
+        let photoDetailViewModele = PhotoDetailViewModel(photo: photo)
+        
+        let detailViewController = PhotoDetailViewController(viewModel: photoDetailViewModele)
+        return detailViewController
     }
 }
 
