@@ -3,28 +3,22 @@ import Foundation
 import UIKit
 
 protocol FavoritePhotoViewModelProtocol {
-    var favoritePhotos: [Photo] { get }
+    var favoritePhotos: [Photo] { get set }
+    func viewDidLoad()
 }
 
 final class FavoritePhotoViewModel: FavoritePhotoViewModelProtocol {
+
+    var favoritePhotos: [Photo]
+    //var updateUI: (() -> Void)?
     
-    var favoritePhotos:[Photo] = []
-    var mainViewModel : MainViewModelProtocol
-    var updateUI: (() -> Void)?
-    
-    init(mainViewModel: MainViewModelProtocol) {
-        
-        self.mainViewModel = mainViewModel
+    init(photos: [Photo]) {
+        self.favoritePhotos = photos
     }
     
-    func refreshPhotos() {
-        let favoritePhotoIDs = UserDefaults.standard.stringArray(forKey: "favoritePhotoIDs") ?? []
-        favoritePhotos = favoritePhotoIDs.compactMap { id in
-            if let idInt = Int(id), let photo = mainViewModel.photos.first(where: { $0.id == idInt }) {
-                return photo
-            } else {return nil}
-        }
-        print(favoritePhotos)
-    }
     
+    func viewDidLoad() {
+//        favoritePhotos.removeAll {$0.isFavorite == false}
+//        print(favoritePhotos.count)
+    }
 }

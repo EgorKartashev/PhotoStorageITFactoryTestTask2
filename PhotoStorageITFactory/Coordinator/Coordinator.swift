@@ -27,8 +27,8 @@ class MainCoordinator: Coordinator {
         navigationController.pushViewController(detailViewController, animated: true)
     }
     
-    func showFavoriteViewController() {
-        let favoriteViewController = FavoritePhotoViewController(coordinator: self)
+    func showFavoriteViewController(photos: [Photo]) {
+        let favoriteViewController = MainAssembly.createFavoriteViewController(with: self, photos: photos)
         navigationController.pushViewController(favoriteViewController, animated: true)
     }
 }

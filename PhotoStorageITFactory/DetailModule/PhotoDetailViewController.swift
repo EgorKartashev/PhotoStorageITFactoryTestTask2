@@ -56,7 +56,7 @@ final class PhotoDetailViewController: UIViewController {
     
     func makeImageView() -> UIImageView{
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }
     
@@ -71,8 +71,10 @@ final class PhotoDetailViewController: UIViewController {
         if let viewModel = viewModel{
             if !viewModel.photo.isFavorite {
                 button.setTitle(Size.unfavoriteButtonTitle, for: .normal)
+                starImageView.image = UIImage(systemName: Size.unFavoritePhotoSystemImage)
             } else {
                 button.setTitle(Size.favoriteButtonTitle, for: .normal)
+                starImageView.image = UIImage(systemName: Size.favoritePhotoSystemImage)
             }
         }
         button.setTitleColor(.blue, for: .normal)

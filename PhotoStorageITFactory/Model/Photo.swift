@@ -22,15 +22,4 @@ struct Photo: Codable,Equatable {
         self.thumbnailUrl = try container.decode(String.self, forKey: .thumbnailUrl)
         self.isFavorite = false
     }
-    
-    // УБрать?
-    
-//    init() { // Добавьте стандартный инициализатор
-//           self.albumId = 0
-//           self.id = 0
-//           self.title = ""
-//           self.url = ""
-//           self.thumbnailUrl = ""
-//           self.isFavorite = false
-//       }
 }

@@ -41,11 +41,15 @@ final class PhotoDetailViewModel: PhotoDetailViewModelProtocol {
             var favoritePhotoIDs = UserDefaults.standard.stringArray(forKey: Resources.KeyUserDefaults.favoritePhotoIDs) ?? []
             favoritePhotoIDs.append(String(photo.id))
             UserDefaults.standard.set(favoritePhotoIDs, forKey: Resources.KeyUserDefaults.favoritePhotoIDs)
+            // УБРАТЬ
+            print(favoritePhotoIDs)
         } else {
             var favoritePhotoIDs = UserDefaults.standard.stringArray(forKey: Resources.KeyUserDefaults.favoritePhotoIDs) ?? []
             if let index = favoritePhotoIDs.firstIndex(of: String(photo.id)) {
                 favoritePhotoIDs.remove(at: index)
                 UserDefaults.standard.set(favoritePhotoIDs, forKey: Resources.KeyUserDefaults.favoritePhotoIDs)
+                // УБРАТЬ
+                print(favoritePhotoIDs)
             }
         }
         delegate?.photoDetailViewModelDidUpdateFavoriteState(viewModel: self, isFavorite: photo.isFavorite)

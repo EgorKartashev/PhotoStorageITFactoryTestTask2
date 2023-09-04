@@ -17,6 +17,12 @@ class MainAssembly {
         let detailViewController = PhotoDetailViewController(viewModel: photoDetailViewModele)
         return detailViewController
     }
+    
+    static func createFavoriteViewController(with coordinator: MainCoordinator,photos: [Photo]) -> FavoritePhotoViewController {
+        let favoritePhotosViewModel = FavoritePhotoViewModel(photos: photos)
+        let favoritePhotosVC = FavoritePhotoViewController(coordinator: coordinator, viewModel: favoritePhotosViewModel)
+        return favoritePhotosVC
+    }
 }
 
 

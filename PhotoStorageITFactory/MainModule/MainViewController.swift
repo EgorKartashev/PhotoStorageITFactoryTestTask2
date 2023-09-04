@@ -1,38 +1,28 @@
 
-    // Доделать
+//****************** ДОДЕЛАТЬ **************
 
-    // Избранное
-//сохранять айди измененого фото
-// когда открываю экран мейнВс релоад дата, при этом написать функцию, которая из массива photo исверяет с массивом favoritePhotos и меняет значение id массиве, затем релоад дата, и еще при этом при построении коллекции, должна быть проверка на isFavorite
 
-// ?сделать фото менеджер (модель)
+// добавить сортировку по ID  или isFavorite или по title
 
-// написать функцию загрузки фото по albumID в нетворк менеджере и loadMore
-// сделать что бы перерисовывалась и коллекция на MainVC и соотвественно менялся массив photos  во вью модели
-// переписать дидскролл в MainViewController
-
-// Избранное сделать
-// добавить фильтрацию
+// добавить фильтрацию?
 // добавить алерты при ошибке загрузки фото?
-// убрать комменты, выровнять, запушить
-// мейн ассембли для феворит фото
+// убрать комменты, выровнять, поправить Марки, запушить
+// удалить фейворитВьюМодель?
 
- //****************** ОШИБКИ **************
-
-    // 1. Архитектура
-
-// Не очень понравилась связь вьюмодели с моделью через клоужеры, при большом приложении это будет не удобно
-
-
+    // ДОП ДОПЫ
+// спиннер на ячейке пока грузится фото
+// спустить кнопки вниз
+// ?сделать фото менеджер (модель)
+// изменить фейворитВС что бы открывался детейлВС?
+// избранное не сохраняется после перезапуска, только если докуртить до нужного места ( надо добавить проверку на избранное при первом звпуске)  (или при загрузке в фетчФото надо вызвать функцию проверки массива соответсвено массиу сохраненых айдишников в userDeafaults а потом строить коллекцию или reloadData()
 
 //****************** ВОПРОСЫ **************
+// путаюсь в инициализаторе вьюмодели почем там протокол, потом в ассембли инфиализируем...рзобраться
+// правильный ли подход релоад дата во viewWillAppear делать?
 // протокол инпут аутпут что такое?
-// почему при закрытии детейлВС картинка задерживается на экране как будто
 // надо ли переносить пострение ячейки в Assembly?
 // корректно ли вызывать конфигур ячейки как сделал я, возвращая ячейку как результат?
 // правильно ли работает вью модель в детейл?
-
-//****************** МОИ ИДЕИ **************
 
 
 import UIKit
@@ -45,7 +35,13 @@ private enum Size {
     
     static let toFavoriteVcButtonLeadingConstraint: CGFloat = 100
     static let toFavoriteVcButtonTrailingConstraint: CGFloat = -100
-    static let collectionViewTopConstraint: CGFloat = 40
+    
+    static let sortedFavoriteButtonTopConstraint: CGFloat = 16
+    static let sortedFavoriteButtonLeadingConstraint: CGFloat = 100
+    static let sortedFavoriteButtonTrailingConstraint: CGFloat = -100
+
+    
+    static let collectionViewTopConstraint: CGFloat = 16
 }
 
 final class MainViewController: UIViewController {
@@ -62,6 +58,7 @@ final class MainViewController: UIViewController {
     }()
     
     private lazy var toFavoriteVcButton: UIButton = makeToFavoriteVcButton()
+    private lazy var sortedFavoriteButton: UIButton = makeSortedFavoriteButton()
     
     private var viewModel: MainViewModelProtocol?
     private let coordinator: MainCoordinator
@@ -82,21 +79,25 @@ final class MainViewController: UIViewController {
     }
     
     override func viewDidLoad() {
-        // УБРАТЬ ПОТОМ
-        UserDefaults.standard.removeObject(forKey: "favoritePhotoIDs")
-        
-        
         super.viewDidLoad()
+        // УБРАТЬ ПОТОМ
+        UserDefaults.standard.removeObject(forKey: Resources.KeyUserDefaults.favoritePhotoIDs)
         setupViewModel()
         viewModel?.viewDidLoad()
         setupViews()
         setupDelegates()
         setupConstrants()
     }
-    //  УБРАТЬ
+    //  норм тут делать релоад?
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("WillApear")
+//        print("WillApear")
+//        print("**************************** DO *************")
+//        print(viewModel?.photos)
+        viewModel?.viewWillAppear()
+//        print("**************************** POSLE *************")
+//        print(viewModel?.photos)
+        collectionView.reloadData()
     }
     
     //MARK: - Private Functions
@@ -111,6 +112,7 @@ final class MainViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(collectionView)
         view.addSubview(toFavoriteVcButton)
+        view.addSubview(sortedFavoriteButton)
     }
     
     private func setupDelegates(){
@@ -124,10 +126,14 @@ final class MainViewController: UIViewController {
             toFavoriteVcButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Size.toFavoriteVcButtonLeadingConstraint),
             toFavoriteVcButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Size.toFavoriteVcButtonTrailingConstraint),
             
-            collectionView.topAnchor.constraint(equalTo: toFavoriteVcButton.bottomAnchor,constant: Size.collectionViewTopConstraint),
+            collectionView.topAnchor.constraint(equalTo: sortedFavoriteButton.bottomAnchor,constant: Size.collectionViewTopConstraint),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            sortedFavoriteButton.topAnchor.constraint(equalTo: toFavoriteVcButton.bottomAnchor, constant: Size.sortedFavoriteButtonTopConstraint),
+            sortedFavoriteButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Size.sortedFavoriteButtonLeadingConstraint),
+            sortedFavoriteButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: Size.sortedFavoriteButtonTrailingConstraint),
         ])
     }
     
@@ -141,8 +147,25 @@ final class MainViewController: UIViewController {
         return button
     }
     
+    func makeSortedFavoriteButton() -> UIButton {
+        let button = UIButton()
+        button.setTitle("Sorted by isFavorite", for: .normal)
+        button.layer.cornerRadius = Size.cornerRadius
+        button.backgroundColor = .systemBlue
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(sortedByFavorite), for: .touchUpInside)
+        return button
+    }
+    
+    
+    // перенести во вью модель?
     @objc private func toFavoriteVC() {
-        coordinator.showFavoriteViewController()
+     //   viewModel?.toFavoriteVC()
+        coordinator.showFavoriteViewController(photos: viewModel?.photos ?? [])
+    }
+    
+    @objc private func sortedByFavorite() {
+        viewModel?.sortedByFavoriteButtonPressed()
     }
 }
 
@@ -150,7 +173,7 @@ final class MainViewController: UIViewController {
 
 extension MainViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    print("КОЛИЧСТВО ФОТО", viewModel?.photos.count ?? 0)
+  //  print("КОЛИЧСТВО ФОТО", viewModel?.photos.count ?? 0)
       return viewModel?.photos.count ?? 0
     }
     
@@ -170,27 +193,29 @@ extension MainViewController: UICollectionViewDelegate {
         coordinator.showPhotoDetail(photo: viewModel.photos[indexPath.row])
     }
     
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        let position = scrollView.contentOffset.y
-//        let distanceToBottom = collectionView.contentSize.height - position - scrollView.frame.size.height
-//        if let viewModel = viewModel{
-//            if distanceToBottom < 100 && !viewModel.isLoadingData {
-//                viewModel.fetchPhotos()
-//            }
-//        }
-//    }
-}
-
-extension MainViewController: PhotoDetailViewModelDelegate {
-    func photoDetailViewModelDidUpdateFavoriteState(viewModel: PhotoDetailViewModel, isFavorite: Bool) {
-        collectionView.reloadData()
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let position = scrollView.contentOffset.y
+        let distanceToBottom = collectionView.contentSize.height - position - scrollView.frame.size.height
+        if let viewModel = viewModel{
+            if distanceToBottom < 100 && !viewModel.isLoading {
+                // переименовать функцию во вью модели???
+                viewModel.viewDidLoad()
+            }
+        }
     }
 }
+
+//extension MainViewController: PhotoDetailViewModelDelegate {
+//    func photoDetailViewModelDidUpdateFavoriteState(viewModel: PhotoDetailViewModel, isFavorite: Bool) {
+//        collectionView.reloadData()
+//    }
+//}
 
 extension MainViewController: MainViewRepresentableProtocol {
     func viewStateChanged(state: MainViewState) {
         switch state{
         case .loading:
+            // Delete
             print("Loading")
         case .loaded(let photos):
             self.viewModel?.photos = photos
