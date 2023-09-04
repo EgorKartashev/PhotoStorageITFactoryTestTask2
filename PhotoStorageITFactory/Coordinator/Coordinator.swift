@@ -12,16 +12,16 @@ protocol Coordinator: AnyObject {
 class MainCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController
-
+    
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
-
+    
     func start() {
         let mainViewController = MainAssembly.createMainViewController(with: self)
         navigationController.pushViewController(mainViewController, animated: false)
     }
-
+    
     func showPhotoDetail(photo: Photo) {
         let detailViewController = MainAssembly.createPhotoDetailController(with: self,photo: photo)
         navigationController.pushViewController(detailViewController, animated: true)

@@ -119,7 +119,6 @@ class FavoritePhotoCollectionViewCell: UICollectionViewCell {
                         self.titleLabel.text = photo.title
                     }
                 case .failure(let error):
-                    // СДЕЛАТЬ АЛЕРТ?
                     print("Alert ошибка получения данных", error.localizedDescription)
                 }
             }

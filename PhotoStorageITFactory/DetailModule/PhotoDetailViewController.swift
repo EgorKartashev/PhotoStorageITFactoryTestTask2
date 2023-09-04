@@ -11,7 +11,7 @@ private enum Size {
     static let starImageViewTopConstraint: CGFloat = 6
     static let starImageViewTrailingConstraint: CGFloat = -16
     static let starImageViewBottomConstraint: CGFloat = -6
-
+    
     static let cornerRadius: CGFloat = 10
     static let widthBorder: CGFloat = 1
     
@@ -116,7 +116,6 @@ final class PhotoDetailViewController: UIViewController {
         ])
     }
 }
-
 
 extension PhotoDetailViewController: PhotoDetailViewModelDelegate{
     func photoDetailViewModelDidUpdateFavoriteState(viewModel: PhotoDetailViewModel, isFavorite: Bool) {

@@ -22,7 +22,6 @@ final class FavoritePhotoViewController: UIViewController {
     
     private var viewModel: FavoritePhotoViewModelProtocol?
     private let coordinator: MainCoordinator
-   // var favoritePhotos: [Photo] = []
     
     //MARK: - Lifecycles aunctions
     
@@ -39,32 +38,13 @@ final class FavoritePhotoViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        // не Корректно здесь это делать?
-        viewModel?.favoritePhotos.removeAll {$0.isFavorite == false}
-        collectionView.reloadData()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel?.viewDidLoad()
         setupViews()
         setupDelegates()
         setupConstrants()
     }
     
-    //MARK: - Private Functions
-    
-//    private func setupViewModel() {
-//        let mainViewModele = MainViewModel()
-//        viewModel = FavoritePhotoViewModel(mainViewModel: mainViewModele)
-//        viewModel?.updateUI = { [weak self] in
-//            DispatchQueue.main.async {
-//                self?.collectionView.reloadData()
-//            }
-//        }
-//    }
     //MARK: - UI
     
     private func setupViews(){
@@ -72,7 +52,6 @@ final class FavoritePhotoViewController: UIViewController {
     }
     
     private func setupDelegates(){
-//        collectionView.delegate = self
         collectionView.dataSource = self
     }
     
@@ -100,14 +79,3 @@ extension FavoritePhotoViewController: UICollectionViewDataSource {
         return cell
     }
 }
-
-//MARK: - Delegate
-
-// ИСПРАВИТЬ ИЛИ УДАЛИТЬ, когда из фейвоиитВС я открываю детейлВС, удаляю объект, не обновляется коллекция favoriteVC и массив фейворитФотос (так же УДАЛИТЬ лишнее в модели и ячейки
-
-//extension FavoritePhotoViewController: UICollectionViewDelegate {
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        guard let viewModel = viewModel else { return }
-//        coordinator.showPhotoDetail(photo: viewModel.favoritePhotos[indexPath.row])
-//    }
-//}

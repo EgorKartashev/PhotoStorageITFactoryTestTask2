@@ -1,30 +1,4 @@
 
-//****************** ДОДЕЛАТЬ **************
-
-
-// добавить сортировку по ID  или isFavorite или по title
-
-// добавить фильтрацию?
-// добавить алерты при ошибке загрузки фото?
-// убрать комменты, выровнять, поправить Марки, запушить
-// удалить фейворитВьюМодель?
-
-    // ДОП ДОПЫ
-// спиннер на ячейке пока грузится фото
-// спустить кнопки вниз
-// ?сделать фото менеджер (модель)
-// изменить фейворитВС что бы открывался детейлВС?
-// избранное не сохраняется после перезапуска, только если докуртить до нужного места ( надо добавить проверку на избранное при первом звпуске)  (или при загрузке в фетчФото надо вызвать функцию проверки массива соответсвено массиу сохраненых айдишников в userDeafaults а потом строить коллекцию или reloadData()
-
-//****************** ВОПРОСЫ **************
-// путаюсь в инициализаторе вьюмодели почем там протокол, потом в ассембли инфиализируем...рзобраться
-// правильный ли подход релоад дата во viewWillAppear делать?
-// протокол инпут аутпут что такое?
-// надо ли переносить пострение ячейки в Assembly?
-// корректно ли вызывать конфигур ячейки как сделал я, возвращая ячейку как результат?
-// правильно ли работает вью модель в детейл?
-
-
 import UIKit
 //MARK: - Private constants
 
@@ -35,12 +9,9 @@ private enum Size {
     
     static let toFavoriteVcButtonLeadingConstraint: CGFloat = 100
     static let toFavoriteVcButtonTrailingConstraint: CGFloat = -100
-    
     static let sortedFavoriteButtonTopConstraint: CGFloat = 16
     static let sortedFavoriteButtonLeadingConstraint: CGFloat = 100
     static let sortedFavoriteButtonTrailingConstraint: CGFloat = -100
-
-    
     static let collectionViewTopConstraint: CGFloat = 16
 }
 
@@ -80,30 +51,15 @@ final class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // УБРАТЬ ПОТОМ
-        UserDefaults.standard.removeObject(forKey: Resources.KeyUserDefaults.favoritePhotoIDs)
-        setupViewModel()
         viewModel?.viewDidLoad()
         setupViews()
         setupDelegates()
         setupConstrants()
     }
-    //  норм тут делать релоад?
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        print("WillApear")
-//        print("**************************** DO *************")
-//        print(viewModel?.photos)
         viewModel?.viewWillAppear()
-//        print("**************************** POSLE *************")
-//        print(viewModel?.photos)
         collectionView.reloadData()
-    }
-    
-    //MARK: - Private Functions
-    
-    private func setupViewModel() {
-        viewModel?.delegate = self
     }
     
     //MARK: - UI
@@ -118,6 +74,7 @@ final class MainViewController: UIViewController {
     private func setupDelegates(){
         collectionView.delegate = self
         collectionView.dataSource = self
+        viewModel?.delegate = self
     }
     
     private func setupConstrants(){
@@ -147,6 +104,13 @@ final class MainViewController: UIViewController {
         return button
     }
     
+    @objc private func toFavoriteVC() {
+        guard let viewModel = viewModel else { return }
+        var favoritePhotos = viewModel.photos
+        favoritePhotos.removeAll{$0.isFavorite == false}
+        coordinator.showFavoriteViewController(photos: favoritePhotos)
+    }
+    
     func makeSortedFavoriteButton() -> UIButton {
         let button = UIButton()
         button.setTitle("Sorted by isFavorite", for: .normal)
@@ -155,13 +119,6 @@ final class MainViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(sortedByFavorite), for: .touchUpInside)
         return button
-    }
-    
-    
-    // перенести во вью модель?
-    @objc private func toFavoriteVC() {
-     //   viewModel?.toFavoriteVC()
-        coordinator.showFavoriteViewController(photos: viewModel?.photos ?? [])
     }
     
     @objc private func sortedByFavorite() {
@@ -173,12 +130,11 @@ final class MainViewController: UIViewController {
 
 extension MainViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-  //  print("КОЛИЧСТВО ФОТО", viewModel?.photos.count ?? 0)
-      return viewModel?.photos.count ?? 0
+        return viewModel?.photos.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.photoCellID, for: indexPath) as? PhotoCollectionViewCell else {return UICollectionViewCell()}
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.photoCellID, for: indexPath) as? PhotoCollectionViewCell else { return UICollectionViewCell()}
         guard let viewModel = viewModel else { return UICollectionViewCell() }
         cell.configure(photo: viewModel.photos[indexPath.row], viewModele: viewModel, cell: cell)
         return cell
@@ -198,32 +154,26 @@ extension MainViewController: UICollectionViewDelegate {
         let distanceToBottom = collectionView.contentSize.height - position - scrollView.frame.size.height
         if let viewModel = viewModel{
             if distanceToBottom < 100 && !viewModel.isLoading {
-                // переименовать функцию во вью модели???
-                viewModel.viewDidLoad()
+                viewModel.loadMorePhotos()
             }
         }
     }
 }
 
-//extension MainViewController: PhotoDetailViewModelDelegate {
-//    func photoDetailViewModelDidUpdateFavoriteState(viewModel: PhotoDetailViewModel, isFavorite: Bool) {
-//        collectionView.reloadData()
-//    }
-//}
+//MARK: - Extensions
 
 extension MainViewController: MainViewRepresentableProtocol {
     func viewStateChanged(state: MainViewState) {
         switch state{
-        case .loading:
-            // Delete
-            print("Loading")
         case .loaded(let photos):
             self.viewModel?.photos = photos
             collectionView.reloadData()
+            viewModel?.isLoading = false
         case .error(let error):
             print(error)
+        case .sorted(let sortedPhotos):
+            viewModel?.photos = sortedPhotos
+            collectionView.reloadData()
         }
     }
-    
-    
 }

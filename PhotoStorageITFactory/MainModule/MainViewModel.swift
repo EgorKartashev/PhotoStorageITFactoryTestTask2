@@ -3,9 +3,9 @@ import Foundation
 import UIKit
 
 enum MainViewState {
-    case loading
     case loaded([Photo])
     case error(String)
+    case sorted([Photo])
 }
 
 protocol MainViewRepresentableProtocol: AnyObject {
@@ -15,12 +15,12 @@ protocol MainViewRepresentableProtocol: AnyObject {
 protocol MainViewModelProtocol {
     var delegate: MainViewRepresentableProtocol? { get set }
     var photos: [Photo] { get set}
-    var isLoading: Bool { get }
+    var isLoading: Bool { get set}
     func viewDidLoad()
+    func loadMorePhotos()
     func cellConfigure(photo: Photo, cell: PhotoCollectionViewCell) -> Void
     func viewWillAppear()
     func sortedByFavoriteButtonPressed()
-    //func toFavoriteVC()
 }
 
 final class MainViewModel: MainViewModelProtocol {
@@ -29,8 +29,6 @@ final class MainViewModel: MainViewModelProtocol {
     
     var photos: [Photo] = []
     var albumID = 1
-   // var favoritePhotos: [Photo] = []
-    // убрать?
     var isLoading = false
     
     func photoTitle(at index: Int) -> String {
@@ -38,33 +36,31 @@ final class MainViewModel: MainViewModelProtocol {
     }
     
     func viewDidLoad(){
+        UserDefaults.standard.removeObject(forKey: Resources.KeyUserDefaults.favoritePhotoIDs)
+        fetchPhotos()
+    }
+    
+    func loadMorePhotos(){
         fetchPhotos()
     }
     
     func viewWillAppear(){
         let favoritePhotos = UserDefaults.standard.stringArray(forKey: Resources.KeyUserDefaults.favoritePhotoIDs) ?? []
-            toggleFavoriteStatus(photos: &photos, idsToToggle: favoritePhotos)
+        toggleFavoriteStatus(photos: &photos, idsToToggle: favoritePhotos)
     }
     
     func sortedByFavoriteButtonPressed() {
-        // убрать
-        print("sorted button pressed")
-        
+        let sortedPhoto = photos.sorted {$0.isFavorite && !$1.isFavorite}
+        delegate?.viewStateChanged(state: .sorted(sortedPhoto))
     }
     
     func fetchPhotos() {
-        delegate?.viewStateChanged(state: .loading)
         isLoading = true
         NetworkManager.shared.fetchPhotos(albumID: self.albumID) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case.success(let photos):
-                //Delete
-                print(self.photos.count)
                 self.photos.append(contentsOf: photos)
-                //Delete
-                print(self.photos.count)
-                
                 self.delegate?.viewStateChanged(state: .loaded(self.photos))
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.isLoading = false
@@ -97,7 +93,6 @@ final class MainViewModel: MainViewModelProtocol {
                         cell.titleLabel.text = photo.title
                     }
                 case .failure(let error):
-                    // СДЕЛАТЬ АЛЕРТ?
                     print("Alert ошибка получения данных", error.localizedDescription)
                 }
             }

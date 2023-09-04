@@ -15,8 +15,6 @@ private enum Size {
     
     static let numberOfLinesTitleLabel: Int = 0
     static let photoImageHeigthConstraint: CGFloat = 150
-    
-    
 }
 
 final class PhotoCollectionViewCell: UICollectionViewCell {
@@ -82,7 +80,6 @@ final class PhotoCollectionViewCell: UICollectionViewCell {
             starImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Size.starImageViewTrailingConstraint),
         ])
     }
-    
     //MARK: - Other Functions
     
     func makePhotoImage() -> UIImageView {
@@ -101,7 +98,7 @@ final class PhotoCollectionViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         return imageView
     }
-    // корректно ли так вызывать конфигур?
+    
     func configure(photo: Photo, viewModele: MainViewModelProtocol, cell: PhotoCollectionViewCell) -> Void {
         viewModele.cellConfigure(photo: photo, cell: cell)
     }
